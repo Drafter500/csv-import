@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { checkCellError } from '../utils/validation';
+import { validateCell } from '../utils/validation';
 
 export interface TableCellProps {
   rowIndex: number;
@@ -10,7 +10,7 @@ export interface TableCellProps {
 
 const TableCell = React.memo<TableCellProps>(({ rowIndex, header, initialValue, onCellEdit }) => {
   const [value, setValue] = useState(initialValue);
-  const error = checkCellError(header, value, rowIndex);
+  const error = validateCell(header, value, rowIndex);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);

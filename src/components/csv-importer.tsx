@@ -8,6 +8,9 @@ import { validateFullTable } from '../utils/validation';
 
 
 const CsvImporter: React.FC = () => {
+  // Data is ref and not a state to improve performance: When user types in the
+  // cell, it does not cause a re-render of the whole grid, as it makes the UI
+  // sluggish when a big file is imported.
   const dataRef = useRef<CSVRow[]>([]);
   const headersRef = useRef<string[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
@@ -29,6 +32,7 @@ const CsvImporter: React.FC = () => {
         setHeaders(parsedHeaders);
         dataRef.current = results.data;
         setErrors(validateFullTable(results.data, parsedHeaders));
+        // This is what makes the table render the data. No rerenders are needed
         setTableKey(k => k + 1);
       },
       error: (error: Error) => {
@@ -61,7 +65,9 @@ const CsvImporter: React.FC = () => {
         onError={handleFileSelectError}
       />
 
-      <ValidationSummary errors={errors} />
+      {dataRef.current.length > 0 && (
+        <ValidationSummary errors={errors} />
+      )}
 
       <EditableTable
         key={tableKey}

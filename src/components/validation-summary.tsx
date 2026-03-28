@@ -21,7 +21,7 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ errors }) => {
       </strong>
       <ul className="mt-1 mb-0 pl-3">
         {errors.slice(0, 3).map((err, i) => (
-          <li key={i}>{err.message}</li>
+          <li key={i}>Row {err.row + 1}: {err.message}</li>
         ))}
         {errors.length > 3 && (
           <li className="italic">
