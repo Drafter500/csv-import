@@ -1,10 +1,36 @@
 import React, { useState, useRef } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, styled } from '@mui/material';
 
 interface CSVUploadZoneProps {
   onFileSelected: (file: File) => void;
   onError: (message: string) => void;
 }
+
+const DropZone = styled(Box)<{ ownerState: { isDragging: boolean } }>(
+  ({ theme, ownerState }) => ({
+    border: '2px dashed',
+    borderColor: ownerState.isDragging
+      ? theme.palette.primary.main
+      : theme.palette.grey[400],
+    backgroundColor: ownerState.isDragging
+      ? theme.palette.primary.light
+      : theme.palette.grey[50],
+    padding: theme.spacing(6),
+    textAlign: 'center',
+    borderRadius: Number(theme.shape.borderRadius) * 2,
+    cursor: 'pointer',
+    marginBottom: theme.spacing(4),
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.light,
+    },
+  }),
+);
+
+const HiddenInput = styled('input')({
+  display: 'none',
+});
 
 const FileSelector: React.FC<CSVUploadZoneProps> = ({ onFileSelected, onError }) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -42,26 +68,12 @@ const FileSelector: React.FC<CSVUploadZoneProps> = ({ onFileSelected, onError })
   };
 
   return (
-    <Box
+    <DropZone
+      ownerState={{ isDragging }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
-      sx={{
-        border: '2px dashed',
-        borderColor: isDragging ? 'primary.main' : 'grey.400',
-        bgcolor: isDragging ? 'primary.50' : 'grey.50',
-        p: 6,
-        textAlign: 'center',
-        borderRadius: 2,
-        cursor: 'pointer',
-        mb: 4,
-        transition: 'all 0.2s ease',
-        '&:hover': {
-          borderColor: 'primary.main',
-          bgcolor: 'primary.50',
-        }
-      }}
     >
       <Typography variant="body1" color="text.secondary">
         {isDragging
@@ -69,14 +81,13 @@ const FileSelector: React.FC<CSVUploadZoneProps> = ({ onFileSelected, onError })
           : 'Drag and drop your CSV file here, or click to browse'
         }
       </Typography>
-      <input
+      <HiddenInput
         type="file"
         accept=".csv"
         onChange={handleFileUpload}
         ref={fileInputRef}
-        style={{ display: 'none' }}
       />
-    </Box>
+    </DropZone>
   );
 };
 

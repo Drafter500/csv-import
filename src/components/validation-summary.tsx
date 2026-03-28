@@ -1,7 +1,17 @@
 import React from 'react';
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, styled } from '@mui/material';
 import type { ValidationError } from '../types/csv';
 
+
+const StyledAlert = styled(Alert)(({ theme }) => ({
+  marginBottom: theme.spacing(4),
+  borderRadius: Number(theme.shape.borderRadius) * 2,
+}));
+
+const ErrorList = styled('ul')({
+  margin: 0,
+  paddingLeft: '20px',
+});
 
 interface ValidationSummaryProps {
   errors: ValidationError[];
@@ -13,13 +23,13 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ errors }) => {
   }
 
   return (
-    <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }}>
+    <StyledAlert severity="error">
       <AlertTitle>
         <strong>
           We found {errors.length} item{errors.length > 1 ? 's' : ''} that need your attention:
         </strong>
       </AlertTitle>
-      <ul style={{ margin: 0, paddingLeft: '20px' }}>
+      <ErrorList>
         {errors.slice(0, 5).map((err, i) => (
           <li key={i}>{err.message}</li>
         ))}
@@ -30,8 +40,8 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ errors }) => {
             </em>
           </li>
         )}
-      </ul>
-    </Alert>
+      </ErrorList>
+    </StyledAlert>
   );
 };
 

@@ -6,11 +6,12 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   TextField,
   Tooltip,
+  styled,
 } from '@mui/material';
 import type { CSVRow, ValidationError } from '../types/csv';
+
 
 
 interface EditableTableProps {
@@ -30,16 +31,16 @@ const EditableTable: React.FC<EditableTableProps> = ({ data, headers, errors, on
   }
 
   return (
-    <TableContainer component={Paper} elevation={2} sx={{ borderRadius: 2 }}>
+    <StyledTableContainer>
       <Table size="small">
-        <TableHead sx={{ bgcolor: 'grey.100' }}>
+        <StyledTableHead>
           <TableRow>
             <TableCell width="50px"><strong>#</strong></TableCell>
             {headers.map(header => (
               <TableCell key={header}><strong>{header}</strong></TableCell>
             ))}
           </TableRow>
-        </TableHead>
+        </StyledTableHead>
         <TableBody>
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex} hover>
@@ -50,7 +51,7 @@ const EditableTable: React.FC<EditableTableProps> = ({ data, headers, errors, on
                 const cellError = getCellError(rowIndex, header);
 
                 return (
-                  <TableCell key={header} sx={{ p: 0, borderRight: '1px solid #eee' }}>
+                  <StyledTableCell key={header}>
                     <Tooltip
                       title={cellError?.message || ''}
                       placement="top"
@@ -60,30 +61,48 @@ const EditableTable: React.FC<EditableTableProps> = ({ data, headers, errors, on
                       disableFocusListener={!cellError}
                       disableTouchListener={!cellError}
                     >
-                      <TextField
+                      <StyledTextField
+                        ownerState={{ hasError: !!cellError }}
                         value={row[header] || ''}
                         onChange={(e) => onCellEdit(rowIndex, header, e.target.value)}
                         error={!!cellError}
                         variant="outlined"
                         size="small"
                         fullWidth
-                        sx={{
-                          '& .MuiOutlinedInput-notchedOutline': {
-                            border: cellError ? undefined : 'none',
-                          },
-                          bgcolor: cellError ? '#fff0f0' : 'transparent',
-                        }}
                       />
                     </Tooltip>
-                  </TableCell>
+                  </StyledTableCell>
                 );
               })}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </StyledTableContainer>
   );
 };
+
+const StyledTableContainer = styled(TableContainer)({
+  backgroundColor: 'white',
+  borderRadius: 8,
+});
+
+const StyledTableHead = styled(TableHead)(({ theme }) => ({
+  backgroundColor: theme.palette.grey[100],
+}));
+
+const StyledTableCell = styled(TableCell)({
+  padding: 0,
+  borderRight: '1px solid #eee',
+});
+
+const StyledTextField = styled(TextField)<{ ownerState: { hasError: boolean } }>(
+  ({ ownerState }) => ({
+    backgroundColor: ownerState.hasError ? '#fff0f0' : 'transparent',
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: ownerState.hasError ? undefined : 'none',
+    },
+  }),
+);
 
 export default EditableTable;
