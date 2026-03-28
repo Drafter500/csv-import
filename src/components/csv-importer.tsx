@@ -16,8 +16,6 @@ const CsvImporter: React.FC = () => {
   const [headers, setHeaders] = useState<string[]>([]);
   const [errors, setErrors] = useState<ValidationError[]>([]);
   const [tableKey, setTableKey] = useState(0);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
   const revalidateAll = useCallback(() => {
     setErrors(validateFullTable(dataRef.current, headersRef.current));
   }, []);
@@ -49,11 +47,13 @@ const CsvImporter: React.FC = () => {
     setErrors([{ row: -1, column: 'File', message }]);
   };
 
-  const handleCellEdit = useCallback((rowIndex: number, header: string, newValue: string) => {
+  const handleCellEdit = useCallback((
+    rowIndex: number,
+    header: string,
+    newValue: string,
+  ) => {
     dataRef.current[rowIndex] = { ...dataRef.current[rowIndex], [header]: newValue };
-
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(revalidateAll, 300);
+    revalidateAll();
   }, [revalidateAll]);
 
   return (

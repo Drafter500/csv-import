@@ -8,7 +8,7 @@ export interface TableCellProps {
   onCellEdit: (rowIndex: number, header: string, newValue: string) => void;
 }
 
-const TableCell = React.memo<TableCellProps>(({ rowIndex, header, initialValue, onCellEdit }) => {
+const TableCell: React.FC<TableCellProps> = ({ rowIndex, header, initialValue, onCellEdit }) => {
   const [value, setValue] = useState(initialValue);
   const error = validateCell(header, value, rowIndex);
 
@@ -39,6 +39,6 @@ const TableCell = React.memo<TableCellProps>(({ rowIndex, header, initialValue, 
       </div>
     </td>
   );
-});
+};
 
 export default TableCell;

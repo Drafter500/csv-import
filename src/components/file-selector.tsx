@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 
+
 interface CSVUploadZoneProps {
   onFileSelected: (file: File) => void;
   onError: (message: string) => void;
