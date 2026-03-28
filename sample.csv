@@ -1,0 +1,7 @@
+ID,Name,Email,Department,Role
+1,Alice Smith,alice@example.com,Engineering,Developer
+2,,bob@example.com,Sales,Manager
+3,Charlie Brown,charlie.example.com,HR,Recruiter
+4,Diana Prince,diana@wonder,Engineering,Lead
+5,Evan Wright,evan@example.com,,Support
+6,,bademail@,Marketing,Coordinator

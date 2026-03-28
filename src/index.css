@@ -1,0 +1,8 @@
+/* A tiny reset */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #bcd1dd;
+  color: #242e35;
+}
