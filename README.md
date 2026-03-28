@@ -13,3 +13,4 @@ suuuper slow. But I did not want to spend time and find which library is fast
 enough for this task, so I just went bare HTML and prompted AI to write styles.
 It turned out to be quite verbose but looks good, at least acceptable IMO. Other
 time I would just reuse some light weigh components library or at least CSS lib.
+- On a really big datasets we can add scroll to the issue feature
