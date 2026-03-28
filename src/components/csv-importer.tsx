@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Papa, { type ParseResult } from 'papaparse';
-import { Typography } from '@mui/material';
 import FileSelector from './file-selector.tsx';
 import ValidationSummary from './validation-summary';
 import EditableTable from './editable-table';
@@ -56,9 +55,7 @@ const CsvImporter: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom fontWeight="bold">
-        Upload and Edit Data
-      </Typography>
+      <h2 className="text-lg font-semibold mb-4">Upload and Edit Data</h2>
 
       <FileSelector
         onFileSelected={handleFileSelection}
