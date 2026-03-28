@@ -15,7 +15,7 @@ const ValidationSummary: React.FC<ValidationSummaryProps> = ({ errors }) => {
   }
 
   return (
-    <div className="h-34 mb-6 p-3 bg-red-50 border border-red-300 rounded-lg text-red-800 text-sm max-h-44 overflow-y-auto">
+    <div className="h-34 mb-6 p-3 bg-red-50 border border-red-300 rounded-lg text-red-800 text-sm max-h-44 overflow-y-auto flex-shrink-0">
       <strong>
         We found {errors.length} item{errors.length > 1 ? 's' : ''} that need your attention:
       </strong>

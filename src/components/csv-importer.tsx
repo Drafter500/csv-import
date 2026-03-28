@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import Papa, { type ParseResult } from 'papaparse';
 import FileSelector from './file-selector.tsx';
 import ValidationSummary from './validation-summary';
 import EditableTable from './editable-table';
 import type { CSVRow, ValidationError } from '../types/csv';
-import { checkCellError, validateFullTable } from '../utils/validation';
+import { validateFullTable } from '../utils/validation';
 
 
 const CsvImporter: React.FC = () => {
-  const [data, setData] = useState<CSVRow[]>([]);
+  const dataRef = useRef<CSVRow[]>([]);
+  const headersRef = useRef<string[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [tableKey, setTableKey] = useState(0);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const revalidateAll = useCallback(() => {
+    setErrors(validateFullTable(dataRef.current, headersRef.current));
+  }, []);
 
   const handleFileSelection = (file: File) => {
     Papa.parse<CSVRow>(file, {
@@ -18,10 +25,11 @@ const CsvImporter: React.FC = () => {
       skipEmptyLines: true,
       complete: (results: ParseResult<CSVRow>) => {
         const parsedHeaders = results.meta.fields || [];
+        headersRef.current = parsedHeaders;
         setHeaders(parsedHeaders);
-        setData(results.data);
-        const errors = validateFullTable(results.data, parsedHeaders);
-        setErrors(errors);
+        dataRef.current = results.data;
+        setErrors(validateFullTable(results.data, parsedHeaders));
+        setTableKey(k => k + 1);
       },
       error: (error: Error) => {
         setErrors([{
@@ -37,21 +45,12 @@ const CsvImporter: React.FC = () => {
     setErrors([{ row: -1, column: 'File', message }]);
   };
 
-  const handleCellEdit = (rowIndex: number, header: string, newValue: string) => {
-    setData((prevData) => {
-      const updatedData = [...prevData];
-      updatedData[rowIndex] = { ...updatedData[rowIndex], [header]: newValue };
-      return updatedData;
-    });
+  const handleCellEdit = useCallback((rowIndex: number, header: string, newValue: string) => {
+    dataRef.current[rowIndex] = { ...dataRef.current[rowIndex], [header]: newValue };
 
-    setErrors((prevErrors) => {
-      const filteredErrors = prevErrors.filter(
-        (err) => !(err.row === rowIndex && err.column === header)
-      );
-      const newError = checkCellError(header, newValue, rowIndex);
-      return newError ? [...filteredErrors, newError] : filteredErrors;
-    });
-  };
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(revalidateAll, 300);
+  }, [revalidateAll]);
 
   return (
     <>
@@ -65,9 +64,9 @@ const CsvImporter: React.FC = () => {
       <ValidationSummary errors={errors} />
 
       <EditableTable
-        data={data}
+        key={tableKey}
+        data={dataRef.current}
         headers={headers}
-        errors={errors}
         onCellEdit={handleCellEdit}
       />
     </>
